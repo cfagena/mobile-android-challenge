@@ -3,11 +3,14 @@ package com.test.amaro.amarotest.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.test.amaro.amarotest.R;
 import com.test.amaro.amarotest.model.Product;
 
@@ -27,10 +30,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView textView;
+        public TextView nameTextView;
+        public TextView priceTextView;
+        public ImageView productImageView;
+
         public ViewHolder(View v){
             super(v);
-            textView = (TextView) v.findViewById(R.id.textview);
+            nameTextView = (TextView) v.findViewById(R.id.nameTextView);
+            priceTextView = (TextView) v.findViewById(R.id.priceTextView);
+            productImageView = (ImageView) v.findViewById(R.id.productImageView);
         }
     }
 
@@ -43,7 +51,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position){
-        viewHolder.textView.setText(productList.get(position).name);
+        viewHolder.nameTextView.setText(productList.get(position).name);
+        viewHolder.priceTextView.setText(productList.get(position).actualPrice);
+
+        if (productList.get(position).image == null || productList.get(position).image.trim().isEmpty()) {
+            Log.e("Adapter", productList.get(position).name);
+            Picasso.with(context).
+                    load(R.mipmap.img_product_placeholder).
+                    into(viewHolder.productImageView);
+        } else {
+            Picasso.with(context).
+                    load(productList.get(position).image).
+                    placeholder(R.mipmap.img_product_placeholder).
+                    into(viewHolder.productImageView);
+        }
     }
 
     @Override

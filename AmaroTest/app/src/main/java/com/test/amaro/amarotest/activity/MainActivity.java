@@ -46,19 +46,15 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<ProductResponse>() {
             @Override
             public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
-                //Log.d("TAG",response.code()+"");
-
                 ProductResponse productResponse = response.body();
                 List<Product> productList = productResponse.products;
                 loadList(productList);
             }
-
             @Override
             public void onFailure(Call<ProductResponse> call, Throwable t) {
                 call.cancel();
             }
         });
-
 
     }
 
