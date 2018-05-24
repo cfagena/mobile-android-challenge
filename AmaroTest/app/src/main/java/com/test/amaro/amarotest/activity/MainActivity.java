@@ -1,14 +1,15 @@
 package com.test.amaro.amarotest.activity;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.util.Log;
 
 import com.test.amaro.amarotest.R;
+import com.test.amaro.amarotest.adapter.RecyclerViewAdapter;
 import com.test.amaro.amarotest.rest.APIClient;
 import com.test.amaro.amarotest.rest.APIInterface;
 import com.test.amaro.amarotest.model.Product;
@@ -23,6 +24,11 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     APIInterface apiInterface;
+    RecyclerView recyclerView;
+    RecyclerView.Adapter recyclerViewAdapter;
+    RecyclerView.LayoutManager recyclerViewLayoutManager;
+
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +46,11 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<ProductResponse>() {
             @Override
             public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
-                Log.d("TAG",response.code()+"");
+                //Log.d("TAG",response.code()+"");
 
                 ProductResponse productResponse = response.body();
                 List<Product> productList = productResponse.products;
-
-                for (Product product : productList) {
-                    Log.d("DEBUG" + "", "Name: " + product.name + " / Price: " + product.actualPrice);
-                }
+                loadList(productList);
             }
 
             @Override
@@ -56,14 +59,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
+    }
+
+    private void loadList(List<Product> productList) {
+        context = getApplicationContext();
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerViewLayoutManager = new GridLayoutManager(context, 2);
+        recyclerView.setLayoutManager(recyclerViewLayoutManager);
+
+        recyclerViewAdapter = new RecyclerViewAdapter(context, productList);
+        recyclerView.setAdapter(recyclerViewAdapter);
     }
 
 }
