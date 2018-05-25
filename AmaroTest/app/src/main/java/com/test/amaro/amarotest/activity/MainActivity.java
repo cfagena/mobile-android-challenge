@@ -6,7 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.test.amaro.amarotest.R;
 import com.test.amaro.amarotest.adapter.RecyclerViewAdapter;
@@ -21,12 +23,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.RecyclerViewAdapterrOnClickHandler {
 
     APIInterface apiInterface;
     RecyclerView recyclerView;
     RecyclerView.Adapter recyclerViewAdapter;
     RecyclerView.LayoutManager recyclerViewLayoutManager;
+    LinearLayout detailView;
 
     Context context;
 
@@ -39,9 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
         apiInterface = APIClient.getClient().create(APIInterface.class);
 
-        /**
-         GET List Resources
-         **/
+        //TODO 1 check for internet conection
+        //TODO 2 implement progress bar while fetching info from rest call
         Call<ProductResponse> call = apiInterface.doGetProductList();
         call.enqueue(new Callback<ProductResponse>() {
             @Override
@@ -65,8 +67,14 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewLayoutManager = new GridLayoutManager(context, 2);
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
 
-        recyclerViewAdapter = new RecyclerViewAdapter(context, productList);
+        recyclerViewAdapter = new RecyclerViewAdapter(context, productList, this);
         recyclerView.setAdapter(recyclerViewAdapter);
+    }
+
+    @Override
+    public void onClick(Product product) {
+        Context context = this;
+        Toast.makeText(context, product.name, Toast.LENGTH_SHORT).show();
     }
 
 }

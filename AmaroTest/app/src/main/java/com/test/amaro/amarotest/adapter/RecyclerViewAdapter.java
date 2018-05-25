@@ -1,11 +1,11 @@
 package com.test.amaro.amarotest.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,12 +24,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     List<Product> productList;
     Context context;
 
-    public RecyclerViewAdapter(Context context, List<Product> productList){
-        this.productList = productList;
-        this.context = context;
+    private final RecyclerViewAdapterrOnClickHandler onClickHandler;
+
+    public interface RecyclerViewAdapterrOnClickHandler {
+        void onClick(Product product);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public RecyclerViewAdapter(Context context, List<Product> productList, RecyclerViewAdapterrOnClickHandler onClickHandler){
+        this.productList = productList;
+        this.context = context;
+        this.onClickHandler = onClickHandler;
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
         public TextView nameTextView;
         public TextView priceTextView;
         public ImageView productImageView;
@@ -39,6 +46,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             nameTextView = (TextView) v.findViewById(R.id.nameTextView);
             priceTextView = (TextView) v.findViewById(R.id.priceTextView);
             productImageView = (ImageView) v.findViewById(R.id.productImageView);
+            v.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            Product clickedProduct = productList.get(adapterPosition);
+            onClickHandler.onClick(clickedProduct);
         }
     }
 
@@ -70,5 +85,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public int getItemCount(){
         return productList.size();
+    }
+
+    /**
+     * This method is used to set a new list of products if we've already created one.
+     * This is handy when we get new data from the web or rearrange it but don't want to create a
+     * new Adapter to display it.
+     */
+    public void setNewProductList(List<Product> productList) {
+        this.productList = productList;
+        notifyDataSetChanged();
     }
 }
