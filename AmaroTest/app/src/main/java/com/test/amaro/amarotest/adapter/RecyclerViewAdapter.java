@@ -21,8 +21,9 @@ import java.util.List;
  */
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-    List<Product> productList;
-    Context context;
+    private static final String TAG = RecyclerViewAdapter.class.getSimpleName();
+    private List<Product> productList;
+    private Context context;
 
     private final RecyclerViewAdapterrOnClickHandler onClickHandler;
 
@@ -70,7 +71,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         viewHolder.priceTextView.setText(productList.get(position).actualPrice);
 
         if (productList.get(position).image == null || productList.get(position).image.trim().isEmpty()) {
-            Log.e("Adapter", productList.get(position).name);
+            Log.e(TAG, "No image for product: " + productList.get(position).name);
             Picasso.with(context).
                     load(R.mipmap.img_product_placeholder).
                     into(viewHolder.productImageView);
@@ -82,18 +83,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
+    public void setNewProductList(List<Product> productList) {
+        this.productList = productList;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount(){
         return productList.size();
     }
 
-    /**
-     * This method is used to set a new list of products if we've already created one.
-     * This is handy when we get new data from the web or rearrange it but don't want to create a
-     * new Adapter to display it.
-     */
-    public void setNewProductList(List<Product> productList) {
-        this.productList = productList;
-        notifyDataSetChanged();
-    }
 }

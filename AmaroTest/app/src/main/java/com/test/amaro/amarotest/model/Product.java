@@ -8,6 +8,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -46,6 +47,8 @@ public class Product implements Parcelable {
     @Expose
     public String actualPrice;
 
+    private int actualPriceInt;
+
     @SerializedName("discount_percentage")
     @Expose
     public String discountPercentage;
@@ -62,6 +65,19 @@ public class Product implements Parcelable {
     @Expose
     public List<Size> sizes = null;
 
+    public int getActualPriceInt() {
+        if (actualPriceInt == -1){
+            if (actualPrice != null && actualPrice.trim().length() > 0){
+                String price = actualPrice.replaceAll("[^\\d]+", "");
+                actualPriceInt = Integer.parseInt(price);
+            }
+        }
+        return actualPriceInt;
+    }
+
+    public Product(){
+        actualPriceInt = -1;
+    }
 
     protected Product(Parcel in) {
         name = in.readString();
@@ -73,6 +89,7 @@ public class Product implements Parcelable {
         onSale = onSaleVal == 0x02 ? null : onSaleVal != 0x00;
         regularPrice = in.readString();
         actualPrice = in.readString();
+        actualPriceInt = in.readInt();
         discountPercentage = in.readString();
         installments = in.readString();
         image = in.readString();
@@ -103,6 +120,7 @@ public class Product implements Parcelable {
         }
         dest.writeString(regularPrice);
         dest.writeString(actualPrice);
+        dest.writeInt(actualPriceInt);
         dest.writeString(discountPercentage);
         dest.writeString(installments);
         dest.writeString(image);
@@ -126,4 +144,9 @@ public class Product implements Parcelable {
             return new Product[size];
         }
     };
+
+    public static Comparator<Product> priceComparator = new Comparator<Product>() {
+        public int compare(Product product1, Product product2) {
+            return Integer.compare(product1.getActualPriceInt(), product2.getActualPriceInt());
+        }};
 }

@@ -29,16 +29,16 @@ public class ProductDetailFragment extends Fragment implements View.OnClickListe
     private static final String PRODUCT = "PRODUCT";
 
     private Product product;
-    TextView productName;
-    TextView productRegularPrice;
-    TextView productActualPrice;
-    TextView productOnSale;
-    TextView productSizeLabel;
-    LinearLayout sizesContainer;
+    private TextView productName;
+    private TextView productRegularPrice;
+    private TextView productActualPrice;
+    private TextView productOnSale;
+    private TextView productSizeLabel;
+    private LinearLayout sizesContainer;
 
-    Button closeButton;
-    ImageView productImageView;
-    Context context;
+    private Button closeButton;
+    private ImageView productImageView;
+    private Context context;
 
     private OnFragmentInteractionListener mListener;
 
