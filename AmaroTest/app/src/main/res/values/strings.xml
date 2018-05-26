@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">AmaroTest</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="on_sale">Em Promoção</string>
+    <string name="size_label">Tamanho:</string>
+    <string name="one_size_fits_all">U</string>
+    <string name="no_available_sizes">Não há tamanhos disponíveis</string>
 </resources>

@@ -4,11 +4,15 @@ package com.test.amaro.amarotest.model;
  * Created by cfage on 23/05/2018.
  */
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Product {
+public class Product implements Parcelable {
 
     @SerializedName("name")
     @Expose
@@ -58,4 +62,68 @@ public class Product {
     @Expose
     public List<Size> sizes = null;
 
+
+    protected Product(Parcel in) {
+        name = in.readString();
+        style = in.readString();
+        codeColor = in.readString();
+        colorSlug = in.readString();
+        color = in.readString();
+        byte onSaleVal = in.readByte();
+        onSale = onSaleVal == 0x02 ? null : onSaleVal != 0x00;
+        regularPrice = in.readString();
+        actualPrice = in.readString();
+        discountPercentage = in.readString();
+        installments = in.readString();
+        image = in.readString();
+        if (in.readByte() == 0x01) {
+            sizes = new ArrayList<Size>();
+            in.readList(sizes, Size.class.getClassLoader());
+        } else {
+            sizes = null;
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(style);
+        dest.writeString(codeColor);
+        dest.writeString(colorSlug);
+        dest.writeString(color);
+        if (onSale == null) {
+            dest.writeByte((byte) (0x02));
+        } else {
+            dest.writeByte((byte) (onSale ? 0x01 : 0x00));
+        }
+        dest.writeString(regularPrice);
+        dest.writeString(actualPrice);
+        dest.writeString(discountPercentage);
+        dest.writeString(installments);
+        dest.writeString(image);
+        if (sizes == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(sizes);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Product> CREATOR = new Parcelable.Creator<Product>() {
+        @Override
+        public Product createFromParcel(Parcel in) {
+            return new Product(in);
+        }
+
+        @Override
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
 }
