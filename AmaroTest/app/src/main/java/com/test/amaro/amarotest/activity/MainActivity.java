@@ -9,11 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.test.amaro.amarotest.R;
 import com.test.amaro.amarotest.adapter.RecyclerViewAdapter;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private TextView filterTextButton;
     private TextView sortTextButton;
     private Boolean onSaleFilterEnabled;
+    private Button reloadButton;
 
     private List<Product> hiddenProductList;
 
@@ -58,10 +60,14 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         context = getApplicationContext();
+        //TODO butterknife or roboguice it
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         filterTextButton = (TextView) findViewById(R.id.filter_text_button);
         sortTextButton =  (TextView) findViewById(R.id.sort_text_button);
         onSaleFilterEnabled = false;
+
+        reloadButton = (Button) findViewById(R.id.reload_button);
+        reloadButton.setOnClickListener(this);
 
         filterTextButton.setOnClickListener(this);
         sortTextButton.setOnClickListener(this);
@@ -69,20 +75,31 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         apiInterface = APIClient.getClient().create(APIInterface.class);
 
         //TODO repository pattern would be great here
+        retrieveProductListFromServer();
+    }
+
+    private void retrieveProductListFromServer(){
         Call<ProductResponse> call = apiInterface.doGetProductList();
+        mProgressBar.setVisibility(View.VISIBLE);
         call.enqueue(new Callback<ProductResponse>() {
             @Override
             public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
                 ProductResponse productResponse = response.body();
                 productList = productResponse.products;
                 loadRecyclerView();
+                mProgressBar.setVisibility(View.GONE);
+                onSaleFilterEnabled = true;
+                updateOnSaleTextButton();
             }
             @Override
             public void onFailure(Call<ProductResponse> call, Throwable t) {
                 call.cancel();
+                mProgressBar.setVisibility(View.GONE);
+                //TODO implement Dialog - solve noActionBar Theme problem
+                Toast.makeText(context, "Sem conexão com servidor, tente novamente", Toast.LENGTH_LONG).show();
             }
         });
-
+        return;
     }
 
     private void loadRecyclerView() {
@@ -92,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
         recyclerViewAdapter = new RecyclerViewAdapter(context, productList, this);
         recyclerView.setAdapter(recyclerViewAdapter);
-        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -170,6 +186,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 leftOnSaleProductsOnly();
                 ((RecyclerViewAdapter)recyclerViewAdapter).setNewProductList(productList);
             }
+        } else if (id == R.id.reload_button) {
+            retrieveProductListFromServer();
         }
     }
 

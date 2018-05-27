@@ -74,14 +74,13 @@
             android:textColor="@color/black"
             android:gravity="center_horizontal"/>
 
-        <LinearLayout
-            android:id="@+id/sizes_container"
+        <com.test.amaro.amarotest.component.SizeContainerView
+            android:id="@+id/size_list_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal">
-
-        </LinearLayout>
+            android:gravity="center_horizontal"
+            android:layout_gravity="center">
+        </com.test.amaro.amarotest.component.SizeContainerView>
 
     </LinearLayout>
 

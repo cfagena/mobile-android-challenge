@@ -37,6 +37,14 @@
         android:gravity="center_vertical"
         android:clickable="true">
 
+        <Button
+            android:id="@+id/reload_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@mipmap/ic_reload"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="10dp" />
+
         <TextView
             android:id="@+id/filter_text_button"
             android:layout_width="wrap_content"
@@ -68,7 +76,9 @@
             android:textColor="@color/darkGray"
             android:layout_toLeftOf="@id/separator"
             android:text="@string/sort_label"/>
-        </RelativeLayout>
+
+
+    </RelativeLayout>
 
 
     <FrameLayout

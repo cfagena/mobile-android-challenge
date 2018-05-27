@@ -4,21 +4,17 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.test.amaro.amarotest.R;
+import com.test.amaro.amarotest.component.SizeContainerView;
 import com.test.amaro.amarotest.model.Product;
 import com.test.amaro.amarotest.model.Size;
 
@@ -34,13 +30,13 @@ public class ProductDetailFragment extends Fragment implements View.OnClickListe
     private TextView productActualPrice;
     private TextView productOnSale;
     private TextView productSizeLabel;
-    private LinearLayout sizesContainer;
+    private SizeContainerView sizeContainerView;
 
     private Button closeButton;
     private ImageView productImageView;
     private Context context;
 
-    private OnFragmentInteractionListener mListener;
+    private OnFragmentInteractionListener listener;
 
     public ProductDetailFragment() {
     }
@@ -71,17 +67,13 @@ public class ProductDetailFragment extends Fragment implements View.OnClickListe
         productOnSale = (TextView) rootView.findViewById(R.id.product_detail_onsale);
         productImageView = (ImageView) rootView.findViewById(R.id.product_detail_image);
         productSizeLabel = (TextView) rootView.findViewById(R.id.product_detail_size_label);
-        sizesContainer = (LinearLayout ) rootView.findViewById(R.id.sizes_container);
-        updateProductFields(product);
-
         closeButton = (Button) rootView.findViewById(R.id.bt_close_fragment);
         closeButton.setOnClickListener(this);
+        sizeContainerView = (SizeContainerView) rootView.findViewById(R.id.size_list_container);
+
+        updateProductFields(product);
 
         return rootView;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
     }
 
     private void updateProductFields(Product product) {
@@ -120,9 +112,8 @@ public class ProductDetailFragment extends Fragment implements View.OnClickListe
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(getResources().getString(R.string.size_label));
 
-        //TODO encapsulate sizes into a single view (extend Layout to make it clear)
         ArrayList<Size>availableSizes = getAvailableSizes(product.sizes);
-        sizesContainer.removeAllViews();
+        sizeContainerView.setAvailableSizes(availableSizes);
 
         if (availableSizes != null && availableSizes.size() == 1){
             Size size = product.sizes.get(0);
@@ -132,52 +123,15 @@ public class ProductDetailFragment extends Fragment implements View.OnClickListe
                 stringBuilder.append(" ");
                 stringBuilder.append(getResources().getString(R.string.one_size_fits_all));
                 productSizeLabel.setText(stringBuilder.toString());
-                updateSizeContainerWithOneSizeFitsAll();
             } else {
                 productSizeLabel.setText(stringBuilder.toString());
-                updateSizeContainer(availableSizes);
             }
 
         } else if (availableSizes != null && availableSizes.size() > 1){
             productSizeLabel.setText(stringBuilder.toString());
-            updateSizeContainer(availableSizes);
         } else {
             // null or empty list
             productSizeLabel.setText(getResources().getString(R.string.no_available_sizes));
-        }
-    }
-
-    private void updateSizeContainerWithOneSizeFitsAll() {
-        TextView textView = new TextView(context);
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT);
-        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-        layoutParams.setMargins(10, 10, 10, 10);
-        textView.setLayoutParams(layoutParams);
-        textView.setText(getResources().getString(R.string.one_size_fits_all));
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-        textView.setTextColor(ContextCompat.getColor(context, R.color.white));
-        textView.setGravity(Gravity.CENTER);
-        textView.setVisibility(View.VISIBLE);
-        textView.setBackground(ContextCompat.getDrawable(context, R.drawable.one_size_shape));
-        sizesContainer.addView(textView);
-    }
-
-    private void updateSizeContainer(ArrayList<Size> availableSizes) {
-        for (Size size: availableSizes) {
-            TextView textView = new TextView(context);
-            LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT);
-            layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-            layoutParams.setMargins(10, 10, 10, 10);
-            textView.setLayoutParams(layoutParams);
-            textView.setText(size.size);
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-            textView.setTextColor(ContextCompat.getColor(context, R.color.black));
-            textView.setGravity(Gravity.CENTER);
-            textView.setVisibility(View.VISIBLE);
-            textView.setBackground(ContextCompat.getDrawable(context, R.drawable.size_shape));
-            sizesContainer.addView(textView);
         }
     }
 
@@ -197,7 +151,7 @@ public class ProductDetailFragment extends Fragment implements View.OnClickListe
         super.onAttach(context);
         this.context = context;
         if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+            listener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -207,15 +161,15 @@ public class ProductDetailFragment extends Fragment implements View.OnClickListe
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener.onDetach();
-        mListener = null;
+        listener.onDetach();
+        listener = null;
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_close_fragment:
-                mListener.onFragmentClose();
+                listener.onFragmentClose();
                 break;
         }
     }

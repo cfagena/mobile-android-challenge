@@ -29,8 +29,8 @@ public class SplashActivity extends AppCompatActivity {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork == null || !activeNetwork.isConnectedOrConnecting()){
             AlertDialog.Builder builder =new AlertDialog.Builder(this);
-            builder.setTitle("No internet Connection");
-            builder.setMessage("Please turn on internet connection to continue");
+            builder.setTitle("Sem conexão com a internet");
+            builder.setMessage("Por favor verifica o status de conexão");
             builder.setNegativeButton("close", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -47,7 +47,7 @@ public class SplashActivity extends AppCompatActivity {
                 public void run() {
                     showMainActiviy();
                 }
-            }, 2000);
+            }, 1000);
         }
     }
 
