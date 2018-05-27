@@ -31,7 +31,6 @@ public class ProductDetailFragment extends Fragment implements View.OnClickListe
     private TextView productOnSale;
     private TextView productSizeLabel;
     private SizeContainerView sizeContainerView;
-
     private Button closeButton;
     private ImageView productImageView;
     private Context context;
