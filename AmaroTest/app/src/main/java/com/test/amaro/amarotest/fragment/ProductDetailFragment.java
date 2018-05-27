@@ -165,8 +165,6 @@ public class ProductDetailFragment extends Fragment implements View.OnClickListe
 
     private void updateSizeContainer(ArrayList<Size> availableSizes) {
         for (Size size: availableSizes) {
-            //TODO cache those TextViews
-            //TODO extend TextView to customize
             TextView textView = new TextView(context);
             LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT);

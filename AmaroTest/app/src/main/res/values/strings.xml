@@ -12,5 +12,4 @@
     <string name="separator_label">|</string>
     <string name="filter_hint">Exibe somente itens em Promoção</string>
     <string name="sort_hint">Ordena itens pelo menor preço</string>
-
 </resources>

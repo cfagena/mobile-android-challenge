@@ -68,9 +68,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
         apiInterface = APIClient.getClient().create(APIInterface.class);
 
-        //TODO Splash screen
-        //TODO 1 check for internet conection
-        //TODO 3 repository pattern would be great here
+        //TODO repository pattern would be great here
         Call<ProductResponse> call = apiInterface.doGetProductList();
         call.enqueue(new Callback<ProductResponse>() {
             @Override
@@ -153,13 +151,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         }
         productList.removeAll(temporary);
         hiddenProductList.addAll(temporary);
-    }
-
-    // get rid of it
-    private void printProductList(List<Product> productList){
-        for (Product product: productList) {
-            Log.d("", "Nome: " + product.name + " Preço: " + product.getActualPriceInt());
-        }
     }
 
     @Override
