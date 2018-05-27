@@ -7,4 +7,10 @@
     <string name="no_available_sizes">Não há tamanhos disponíveis</string>
     <string name="sort_price">Ordenar por Preço</string>
     <string name="show_onsale">Mostrar Promoções</string>
+    <string name="sort_label">ORDERNAR</string>
+    <string name="filter_label">PROMOÇÕES</string>
+    <string name="separator_label">|</string>
+    <string name="filter_hint">Exibe somente itens em Promoção</string>
+    <string name="sort_hint">Ordena itens pelo menor preço</string>
+
 </resources>

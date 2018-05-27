@@ -4,16 +4,16 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.Toast;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.test.amaro.amarotest.R;
 import com.test.amaro.amarotest.adapter.RecyclerViewAdapter;
@@ -32,7 +32,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.RecyclerViewAdapterrOnClickHandler,
-        ProductDetailFragment.OnFragmentInteractionListener{
+        ProductDetailFragment.OnFragmentInteractionListener, View.OnClickListener{
 
     private APIInterface apiInterface;
     private RecyclerView recyclerView;
@@ -41,8 +41,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private FrameLayout product_detail;
     private ProductDetailFragment productDetailFragment = null;
     private List<Product> productList;
-    private MenuItem showOnSaleItem;
-    private MenuItem sortByLowestPriceItem;
+    private ProgressBar mProgressBar;
+
+    private TextView filterTextButton;
+    private TextView sortTextButton;
+    private Boolean onSaleFilterEnabled;
 
     private List<Product> hiddenProductList;
 
@@ -55,11 +58,18 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         context = getApplicationContext();
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        filterTextButton = (TextView) findViewById(R.id.filter_text_button);
+        sortTextButton =  (TextView) findViewById(R.id.sort_text_button);
+        onSaleFilterEnabled = false;
+
+        filterTextButton.setOnClickListener(this);
+        sortTextButton.setOnClickListener(this);
 
         apiInterface = APIClient.getClient().create(APIInterface.class);
 
+        //TODO Splash screen
         //TODO 1 check for internet conection
-        //TODO 2 implement progress bar while fetching info from rest call
         //TODO 3 repository pattern would be great here
         Call<ProductResponse> call = apiInterface.doGetProductList();
         call.enqueue(new Callback<ProductResponse>() {
@@ -84,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
         recyclerViewAdapter = new RecyclerViewAdapter(context, productList, this);
         recyclerView.setAdapter(recyclerViewAdapter);
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -97,15 +108,21 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         if (productDetailFragment == null) {
             productDetailFragment = ProductDetailFragment.newInstance(product);
             fragmentTransaction.add(R.id.product_detail, productDetailFragment);
+            fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         } else {
-            productDetailFragment.setProduct(product);
+            Bundle args = new Bundle();
+            args.putParcelable(ProductDetailFragment.PRODUCT, product);
+            productDetailFragment.setArguments(args);
+            fragmentTransaction.replace(R.id.product_detail, productDetailFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
         }
         product_detail.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void onFragmentClose() {
+    public void onDetach() {
         if (product_detail == null){
             product_detail = (FrameLayout) findViewById(R.id.product_detail);
         }
@@ -113,37 +130,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        showOnSaleItem = menu.findItem(R.id.action_show_onsale);
-        sortByLowestPriceItem = menu.findItem(R.id.action_sort_low_price);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_sort_low_price) {
-            Collections.sort(productList, Product.priceComparator);
-            ((RecyclerViewAdapter)recyclerViewAdapter).setNewProductList(productList);
-
-            return true;
-        } else if (id == R.id.action_show_onsale) {
-            if (showOnSaleItem.isChecked()){
-                showOnSaleItem.setChecked(false);
-                showAllProducts();
-                ((RecyclerViewAdapter)recyclerViewAdapter).setNewProductList(productList);
-            } else {
-                showOnSaleItem.setChecked(true);
-                leftOnSaleProductsOnly();
-                ((RecyclerViewAdapter)recyclerViewAdapter).setNewProductList(productList);
-            }
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    public void onFragmentClose() {
+        onBackPressed();
     }
 
     private void showAllProducts() {
@@ -171,6 +159,38 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private void printProductList(List<Product> productList){
         for (Product product: productList) {
             Log.d("", "Nome: " + product.name + " Preço: " + product.getActualPriceInt());
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+        if (id == R.id.sort_text_button){
+            Collections.sort(productList, Product.priceComparator);
+            ((RecyclerViewAdapter)recyclerViewAdapter).setNewProductList(productList);
+            recyclerView.smoothScrollToPosition(0);
+        } else if (id == R.id.filter_text_button){
+            if (onSaleFilterEnabled){
+                updateOnSaleTextButton();
+                showAllProducts();
+                ((RecyclerViewAdapter)recyclerViewAdapter).setNewProductList(productList);
+            } else {
+                updateOnSaleTextButton();
+                leftOnSaleProductsOnly();
+                ((RecyclerViewAdapter)recyclerViewAdapter).setNewProductList(productList);
+            }
+        }
+    }
+
+    private void updateOnSaleTextButton(){
+        if (onSaleFilterEnabled){
+            onSaleFilterEnabled = false;
+            filterTextButton.setBackgroundColor(ContextCompat.getColor(context, R.color.lightGray));
+            filterTextButton.setTextColor(ContextCompat.getColor(context, R.color.darkGray));
+        } else {
+            onSaleFilterEnabled = true;
+            filterTextButton.setBackgroundColor(ContextCompat.getColor(context, R.color.darkGray));
+            filterTextButton.setTextColor(ContextCompat.getColor(context, R.color.white));
         }
     }
 }

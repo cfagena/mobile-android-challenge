@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDetailFragment extends Fragment implements View.OnClickListener{
-    private static final String PRODUCT = "PRODUCT";
+    public static final String PRODUCT = "PRODUCT";
 
     private Product product;
     private TextView productName;
@@ -82,7 +82,6 @@ public class ProductDetailFragment extends Fragment implements View.OnClickListe
 
     public void setProduct(Product product) {
         this.product = product;
-        updateProductFields(product);
     }
 
     private void updateProductFields(Product product) {
@@ -121,6 +120,7 @@ public class ProductDetailFragment extends Fragment implements View.OnClickListe
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(getResources().getString(R.string.size_label));
 
+        //TODO encapsulate sizes into a single view (extend Layout to make it clear)
         ArrayList<Size>availableSizes = getAvailableSizes(product.sizes);
         sizesContainer.removeAllViews();
 
@@ -209,6 +209,7 @@ public class ProductDetailFragment extends Fragment implements View.OnClickListe
     @Override
     public void onDetach() {
         super.onDetach();
+        mListener.onDetach();
         mListener = null;
     }
 
@@ -222,6 +223,7 @@ public class ProductDetailFragment extends Fragment implements View.OnClickListe
     }
 
     public interface OnFragmentInteractionListener {
+        void onDetach();
         void onFragmentClose();
     }
 }

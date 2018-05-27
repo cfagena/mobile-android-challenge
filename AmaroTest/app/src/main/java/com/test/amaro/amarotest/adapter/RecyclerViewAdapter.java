@@ -83,6 +83,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
+    //TODO implement progress bar to give feedback when list is updated
     public void setNewProductList(List<Product> productList) {
         this.productList = productList;
         notifyDataSetChanged();

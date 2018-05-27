@@ -13,11 +13,63 @@
     tools:context="com.test.amaro.amarotest.activity.MainActivity"
     tools:showIn="@layout/activity_main">
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="58dp"
         android:scrollbars="vertical"/>
+
+    <RelativeLayout
+        android:id="@+id/list_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/lightGray"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/filter_text_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="16dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="16dp"
+            android:textColor="@color/darkGray"
+            android:text="@string/filter_label" />
+
+        <TextView
+            android:id="@+id/separator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="16dp"
+            android:paddingRight="16dp"
+            android:layout_toLeftOf="@id/filter_text_button"
+            android:text="@string/separator_label" />
+
+        <TextView
+            android:id="@+id/sort_text_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="16dp"
+            android:paddingRight="16dp"
+            android:textColor="@color/darkGray"
+            android:layout_toLeftOf="@id/separator"
+            android:text="@string/sort_label"/>
+        </RelativeLayout>
+
 
     <FrameLayout
         android:id="@+id/product_detail"

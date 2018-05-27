@@ -6,6 +6,7 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="disabledGray">#b3b3b3</color>
+    <color name="lightGray">#e6e6e6</color>
     <color name="darkGray">#999999</color>
     <color name="onSaleRed">#b30000</color>
 </resources>
